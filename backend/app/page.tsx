@@ -57,7 +57,7 @@ export default function Home() {
               </div>
               <div>
                 <p style={{ margin: 0, fontSize: "0.9rem", color: "#a1a1aa" }}>
-                  AlgoLens Gym Server
+                  Grindset
                 </p>
                 <p style={{ margin: 0, fontWeight: 700 }}>API Control Room</p>
               </div>
@@ -130,7 +130,7 @@ export default function Home() {
                   lineHeight: 1.1,
                 }}
               >
-                LeetCode Gym: spotter, coach, and review queue.
+                Grindset: spotter, coach, and review queue.
               </h1>
               <p
                 style={{

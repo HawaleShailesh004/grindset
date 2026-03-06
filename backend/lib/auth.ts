@@ -1,11 +1,11 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "algolens-gym-secret-change-in-production"
+  process.env.JWT_SECRET || "grindset-secret-change-in-production"
 );
 
-const JWT_ISSUER = "algolens-gym";
-const JWT_AUDIENCE = "algolens-gym";
+const JWT_ISSUER = "grindset";
+const JWT_AUDIENCE = "grindset";
 const JWT_EXPIRY = "7d";
 
 export type JWTPayload = { sub: string; email: string };

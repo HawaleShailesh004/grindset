@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AlgoLens",
+  "name": "Grindset",
   "description": "Master Data Structures with AI-generated flowcharts, smart review scheduling, and instant complexity analysis.",
   "version": "1.0",
   "permissions": ["activeTab", "scripting", "storage"],

@@ -13,7 +13,7 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
 });
 
-const THEME_KEY = "algolens-theme";
+const THEME_KEY = "grindset-theme";
 const isExtension = typeof chrome !== "undefined" && chrome.storage?.local;
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {

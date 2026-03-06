@@ -1,4 +1,4 @@
-// login.jsx — AlgoLens (Redesigned)
+// login — Grindset
 
 "use client";
 
@@ -56,7 +56,7 @@ function LoginContent() {
             <span className="text-2xl font-black" style={{ color: "var(--green)" }}>λ</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--text)" }}>Grindset</h1>
-          <p className="text-sm mt-1 font-medium tracking-wide" style={{ color: "var(--muted)" }}>YOUR PERSONAL DSA GYM</p>
+          <p className="text-sm mt-1 font-medium tracking-wide" style={{ color: "var(--muted)" }}>Your DSA revision companion</p>
         </div>
 
         <div className="flex border rounded-xl p-1 mb-6" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>

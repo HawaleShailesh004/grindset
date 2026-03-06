@@ -6,10 +6,10 @@ export const STORAGE_KEYS = {
   GROQ_KEY: "groqKey",
   OPENAI_KEY: "openaiApiKey",
   AI_PROVIDER: "aiProvider",
-  GYM_USER_ID: "gymUserId",
-  GYM_TOKEN: "gymToken",
+  GRINDSET_USER_ID: "grindsetUserId",
+  GRINDSET_TOKEN: "grindsetToken",
   PREFERRED_LANGUAGE: "preferredLanguage",
-  THEME: "algolens-theme",
+  THEME: "grindset-theme",
   CHAT_PREFIX: "chat_",
   TIMER_PREFIX: "timer_",
 } as const;

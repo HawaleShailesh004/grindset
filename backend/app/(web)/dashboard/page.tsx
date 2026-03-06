@@ -78,7 +78,7 @@ export default function DashboardPage() {
     }
     setToken(storedToken);
     try {
-      const raw = localStorage.getItem("gymUser");
+      const raw = localStorage.getItem("grindsetUser");
       if (raw) {
         const u = JSON.parse(raw) as { email?: string };
         const name = u?.email?.split("@")[0] || "";

@@ -8,10 +8,10 @@ export function useAuth() {
 
   useEffect(() => {
     chrome.storage.local.get(
-      [STORAGE_KEYS.GYM_USER_ID, STORAGE_KEYS.GYM_TOKEN],
+      [STORAGE_KEYS.GRINDSET_USER_ID, STORAGE_KEYS.GRINDSET_TOKEN],
       (res) => {
-        const id = res[STORAGE_KEYS.GYM_USER_ID] as string | undefined;
-        const t = res[STORAGE_KEYS.GYM_TOKEN] as string | undefined;
+        const id = res[STORAGE_KEYS.GRINDSET_USER_ID] as string | undefined;
+        const t = res[STORAGE_KEYS.GRINDSET_TOKEN] as string | undefined;
         if (id) setUserId(id);
         if (t) setToken(t);
         setIsAuthChecking(false);
@@ -21,8 +21,8 @@ export function useAuth() {
 
   const handleLoginSuccess = useCallback((id: string, authToken: string) => {
     chrome.storage.local.set({
-      [STORAGE_KEYS.GYM_USER_ID]: id,
-      [STORAGE_KEYS.GYM_TOKEN]: authToken,
+      [STORAGE_KEYS.GRINDSET_USER_ID]: id,
+      [STORAGE_KEYS.GRINDSET_TOKEN]: authToken,
     });
     setUserId(id);
     setToken(authToken);
@@ -30,7 +30,7 @@ export function useAuth() {
 
   const handleLogout = useCallback(() => {
     if (!confirm("Log out?")) return;
-    chrome.storage.local.remove([STORAGE_KEYS.GYM_USER_ID, STORAGE_KEYS.GYM_TOKEN]);
+    chrome.storage.local.remove([STORAGE_KEYS.GRINDSET_USER_ID, STORAGE_KEYS.GRINDSET_TOKEN]);
     setUserId(null);
     setToken(null);
   }, []);

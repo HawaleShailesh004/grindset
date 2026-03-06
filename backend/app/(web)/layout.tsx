@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { LayoutDashboard, BarChart3, BookOpen, LogOut, User, Settings, ChevronDown } from "lucide-react";
 
 // ─── Auth helpers (unchanged) ─────────────────────────────────────────────────
-const WEB_TOKEN_KEY = "gymToken";
-const WEB_USER_KEY  = "gymUser";
+const WEB_TOKEN_KEY = "grindsetToken";
+const WEB_USER_KEY  = "grindsetUser";
 
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
