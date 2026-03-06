@@ -1,67 +1,59 @@
 import { useState, useEffect } from "react";
+import type { ChatMessage } from "../types";
+import { STORAGE_KEYS } from "../constants";
+import { getChatUrl, getAuthHeaders } from "../utils/api";
 
-const SERVER_URL = `${import.meta.env.VITE_API_URL}/chat`;
+function getChatStorageKey(slug: string): string {
+  return `${STORAGE_KEYS.CHAT_PREFIX}${slug}`;
+}
 
-export const useChatStream = (
-  problemData: any,
+export function useChatStream(
+  problemData: { title?: string; difficulty?: string; content?: string; question?: string } | null,
   userKey: string,
   slug: string | null,
-  token: string | null = null,
-) => {
-  const [messages, setMessages] = useState<
-    { role: string; content: string; isError?: boolean }[]
-  >([]);
+  token: string | null = null
+) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Load History on Mount
   useEffect(() => {
     if (!slug) return;
-    chrome.storage.local.get([`chat_${slug}`], (result) => {
-      const stored = result[`chat_${slug}`] as
-        | { role: string; content: string }[]
-        | undefined;
-
-      if (stored) {
-        setMessages(stored);
-      }
+    const key = getChatStorageKey(slug);
+    chrome.storage.local.get([key], (result) => {
+      const stored = result[key] as ChatMessage[] | undefined;
+      if (stored?.length) setMessages(stored);
     });
   }, [slug]);
 
-  // 2. Save History on Change (UPDATED)
   useEffect(() => {
     if (!slug || messages.length === 0) return;
-
-    // 🛑 FILTER: Don't save error messages to local storage
-    // We only want to persist valid conversation history
     const validHistory = messages.filter((msg) => !msg.isError);
-
-    chrome.storage.local.set({ [`chat_${slug}`]: validHistory });
+    chrome.storage.local.set({ [getChatStorageKey(slug)]: validHistory });
   }, [messages, slug]);
 
   const sendMessage = async (input: string) => {
     if (!input.trim() || !problemData) return;
 
-    const newHistory = [...messages, { role: "user", content: input }];
+    const newHistory: ChatMessage[] = [...messages, { role: "user", content: input }];
     setMessages(newHistory);
     setLoading(true);
 
     try {
-      // Create a placeholder bubble
       setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
-      if (token) headers.Authorization = `Bearer ${token}`;
-      const res = await fetch(SERVER_URL, {
+      const res = await fetch(getChatUrl(), {
         method: "POST",
-        headers,
+        headers: token ? getAuthHeaders(token) : { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: newHistory,
           problemContext: {
             title: problemData.title,
             difficulty: problemData.difficulty,
-            description: problemData.content || problemData.question,
+            description: problemData.content ?? problemData.question,
           },
           userApiKey: userKey,
         }),

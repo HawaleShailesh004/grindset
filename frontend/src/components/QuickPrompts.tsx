@@ -1,8 +1,8 @@
+import { memo } from "react";
 import {
   Sparkles, Bug, Zap, Lightbulb, Search, Box, Scale, Eye, MessageSquare,
 } from "lucide-react";
-
-export type QuickPromptItem = { label: string; text: string };
+import type { QuickPromptItem } from "../types";
 
 const DEFAULT_PROMPTS: { label: string; icon: typeof Lightbulb; text: string }[] = [
   { label: "Hint",       icon: Lightbulb, text: "Give me a small hint to get started, but don't give the answer." },
@@ -26,7 +26,7 @@ interface QuickPromptsProps {
   prompts?: QuickPromptItem[] | null;
 }
 
-export const QuickPrompts = ({ onSelect, prompts }: QuickPromptsProps) => {
+const QuickPromptsInner = ({ onSelect, prompts }: QuickPromptsProps) => {
   const list = prompts && prompts.length > 0
     ? prompts.map((p) => ({ ...p, icon: labelToIcon[p.label] ?? MessageSquare }))
     : DEFAULT_PROMPTS;
@@ -61,3 +61,5 @@ export const QuickPrompts = ({ onSelect, prompts }: QuickPromptsProps) => {
     </div>
   );
 };
+
+export const QuickPrompts = memo(QuickPromptsInner);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Play, Pause, RotateCcw, X } from "lucide-react";
 
 interface TimerProps {
@@ -17,12 +17,14 @@ interface SavedTimerState {
   lastSaved: number;
 }
 
-export const Timer = ({ slug, onTimeUpdate, showOverlay = false }: TimerProps) => {
+const TimerInner = ({ slug, onTimeUpdate, showOverlay = false }: TimerProps) => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
   const intervalRef = useRef<number | null>(null);
+  const slugRef = useRef(slug);
+  slugRef.current = slug;
 
   // When overlay opens, show panel again
   useEffect(() => {
@@ -60,13 +62,14 @@ export const Timer = ({ slug, onTimeUpdate, showOverlay = false }: TimerProps) =
     return () => { if (intervalRef.current) window.clearInterval(intervalRef.current); };
   }, [isRunning]);
 
-  // ── Persist & notify parent (always, so footer keeps updating when modal closed) ──
+  // Persist & notify parent (use slugRef so switching problems doesn't overwrite the new problem's timer)
   useEffect(() => {
+    const key = `timer_${slugRef.current}`;
     chrome.storage.local.set({
-      [`timer_${slug}`]: { currentTime: time, isRunning, lastSaved: Date.now() },
+      [key]: { currentTime: time, isRunning, lastSaved: Date.now() },
     });
     onTimeUpdate(time);
-  }, [time, isRunning, slug, onTimeUpdate]);
+  }, [time, isRunning, onTimeUpdate]);
 
   const fmt = (s: number) => {
     const m = Math.floor(s / 60);
@@ -74,45 +77,8 @@ export const Timer = ({ slug, onTimeUpdate, showOverlay = false }: TimerProps) =
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
 
-  // No timer UI when parent closed the overlay entirely
-  if (!showOverlay) return null;
-
-  // Dismissed: show compact bar at bottom so countdown stays visible and keeps running
-  if (isDismissed) {
-    return (
-      <div
-        className="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-1.5 border-t"
-        style={{
-          backgroundColor: "var(--surface)",
-          borderColor: "var(--border)",
-          fontFamily: "var(--mono)",
-          fontSize: "11px",
-        }}
-      >
-        <span style={{ color: "var(--text-2)" }}>Stopwatch</span>
-        <div className="flex items-center gap-2">
-          <span className="tabular-nums font-medium" style={{ color: "var(--green)" }}>
-            {fmt(time)}
-          </span>
-          <button
-            onClick={() => setIsDismissed(false)}
-            className="px-2 py-0.5 rounded border transition-colors"
-            style={{ borderColor: "var(--border-2)", color: "var(--text-2)" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--green)";
-              e.currentTarget.style.color = "var(--green)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "var(--border-2)";
-              e.currentTarget.style.color = "var(--text-2)";
-            }}
-          >
-            Open
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // No timer UI when overlay closed or dismissed — time stays in footer (community pool row)
+  if (!showOverlay || isDismissed) return null;
 
   return (
     <div
@@ -194,4 +160,6 @@ export const Timer = ({ slug, onTimeUpdate, showOverlay = false }: TimerProps) =
       </div>
     </div>
   );
-}
+};
+
+export const Timer = memo(TimerInner);

@@ -1,7 +1,7 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
-import { useTheme } from "../contexts/ThemeContext";
 
 // Import languages
 import javascript from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
@@ -32,7 +32,7 @@ const langLabel: Record<string, string> = {
 // Use chat theme vars when inside MessageBubble (--chat-code-*) for high-contrast text
 const codeVar = (name: string, fallback: string) => `var(--chat-${name}, var(--${name}, ${fallback}))`;
 
-const getSyntaxStyle = (theme: "dark" | "light", useChatTheme: boolean) => {
+const getSyntaxStyle = (useChatTheme: boolean): Record<string, CSSProperties> => {
   const base = useChatTheme
     ? {
         "code[class*=\"language-\"]": { color: codeVar("code-text", "#e5e7eb"), background: "transparent", textShadow: "none" },
@@ -119,8 +119,6 @@ export const CodeBlock = ({
   useChatTheme?: boolean;
 }) => {
   const [copied, setCopied] = useState(false);
-  const { theme } = useTheme();
-
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
     setCopied(true);
@@ -171,7 +169,7 @@ export const CodeBlock = ({
       {/* Code — high contrast text, no overlay */}
       <SyntaxHighlighter
         language={language?.toLowerCase() || "text"}
-        style={getSyntaxStyle(theme, useChatTheme) as React.CSSProperties}
+        style={getSyntaxStyle(useChatTheme)}
         customStyle={{
           margin: 0,
           padding: compact ? "6px 8px" : "10px 12px",

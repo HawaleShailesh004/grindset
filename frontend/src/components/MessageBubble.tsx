@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -6,7 +7,7 @@ import { CodeBlock } from "./CodeBlock";
 import { Mermaid } from "./Mermaid";
 import { QuotaCard } from "./QuotaCard";
 
-export const MessageBubble = ({
+const MessageBubbleInner = ({
   role,
   content,
   isError,
@@ -177,3 +178,6 @@ export const MessageBubble = ({
     </motion.div>
   );
 };
+
+/** Memoized so typing in chat input doesn't re-render all bubbles and re-run Mermaid/diagrams */
+export const MessageBubble = memo(MessageBubbleInner);

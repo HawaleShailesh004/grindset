@@ -13,29 +13,41 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
 });
 
+const THEME_KEY = "algolens-theme";
+const isExtension = typeof chrome !== "undefined" && chrome.storage?.local;
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("dark");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    // Load from localStorage or system preference
-    const saved = localStorage.getItem("algolens-theme") as Theme | null;
+    const apply = (t: Theme) => {
+      setTheme(t);
+      document.documentElement.setAttribute("data-theme", t);
+    };
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial: Theme = saved || (systemPrefersDark ? "dark" : "light");
-    
-    setTheme(initial);
-    document.documentElement.setAttribute("data-theme", initial);
-    
-    // Listen for system theme changes
+    const fallback: Theme = systemPrefersDark ? "dark" : "light";
+
+    if (isExtension) {
+      chrome.storage.local.get([THEME_KEY], (res) => {
+        const saved = (res[THEME_KEY] as Theme) || null;
+        apply(saved || fallback);
+      });
+    } else {
+      const saved = localStorage.getItem(THEME_KEY) as Theme | null;
+      apply(saved || fallback);
+    }
+
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem("algolens-theme")) {
-        const newTheme = e.matches ? "dark" : "light";
-        setTheme(newTheme);
-        document.documentElement.setAttribute("data-theme", newTheme);
+      if (isExtension) {
+        chrome.storage.local.get([THEME_KEY], (res) => {
+          if (!res[THEME_KEY]) apply(e.matches ? "dark" : "light");
+        });
+      } else if (!localStorage.getItem(THEME_KEY)) {
+        apply(e.matches ? "dark" : "light");
       }
     };
-    
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
@@ -44,10 +56,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setIsTransitioning(true);
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    localStorage.setItem("algolens-theme", next);
     document.documentElement.setAttribute("data-theme", next);
-    
-    // Remove transition lock after a short delay
+    if (isExtension) chrome.storage.local.set({ [THEME_KEY]: next });
+    else localStorage.setItem(THEME_KEY, next);
     setTimeout(() => setIsTransitioning(false), 300);
   };
 

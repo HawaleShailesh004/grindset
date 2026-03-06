@@ -67,11 +67,8 @@ export const Mermaid = ({ chart }: { chart: string }) => {
   const lastChart = useRef<string | null>(null);
 
   useEffect(() => {
-    // Skip if unchanged and we already have an SVG
-    if (chart === lastChart.current && svg) {
-      setStatus("success");
-      return;
-    }
+    // Skip if chart content unchanged and we already have an SVG (no setState — avoids re-render when parent updates)
+    if (chart === lastChart.current && svg) return;
 
     const render = async () => {
       if (!chart || chart.length < 5) return;

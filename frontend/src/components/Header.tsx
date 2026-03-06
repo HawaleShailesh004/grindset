@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Clock, Settings, Trash2, LogOut } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -7,7 +8,7 @@ const diffConfig: Record<string, { color: string; bg: string; dot: string }> = {
   Hard:   { color: "var(--red)", bg: "var(--red-dim)", dot: "var(--red)" },
 };
 
-export const Header = ({
+const HeaderInner = ({
   title,
   difficulty,
   onToggleTimer,
@@ -137,3 +138,5 @@ export const Header = ({
     </header>
   );
 };
+
+export const Header = memo(HeaderInner);
